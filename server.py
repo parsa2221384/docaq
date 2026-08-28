@@ -2,8 +2,8 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
-def load_documents():
-    with open("documents.json", "r", encoding="utf-8") as file:
+def file_loader(filename):
+    with open(filename, "r", encoding="utf-8") as file:
         return json.load(file)
 
 
@@ -13,7 +13,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         if self.path == "/documents":
 
-            documents = load_documents()
+            documents = file_loader("documents.json")
 
             response = json.dumps(documents).encode("utf-8")
             # py object to json
@@ -26,9 +26,9 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif self.path == "/questions":
 
-            documents = load_documents()
+            questions = file_loader("questions.json")
 
-            response = json.dumps(documents).encode("utf-8")
+            response = json.dumps(questions).encode("utf-8")
             # py object to json
 
             self.send_response(200)
@@ -50,15 +50,17 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
 
         if self.path == "/documents":
-
             content_length = int(self.headers["Content-Length"])
 
             body = self.rfile.read(content_length)
 
             data = json.loads(body)
             # json to py object
-
+            previous_data = file_loader("questions.json")
+            previous_data[str(len(previous_data))] = data
             print(data)
+            with open("questions.json", "w") as f:
+                json.dump(previous_data, f)
 
             self.send_response(201)
             self.send_header("Content-Type", "application/json")
@@ -67,6 +69,29 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(
                 b'{"message": "Document created"}'
             )
+
+        elif self.path == "/questions":
+
+            content_length = int(self.headers["Content-Length"])
+
+            body = self.rfile.read(content_length)
+
+            data = json.loads(body)
+            # json to py object
+            previous_data = file_loader("questions.json")
+            previous_data[str(len(previous_data))] = data
+            print(data)
+            with open("questions.json", "w") as f:
+                json.dump(previous_data, f)
+
+            self.send_response(201)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+
+            self.wfile.write(
+                b'{"message": "question created"}'
+            )
+
 
         else:
             self.send_response(404)
