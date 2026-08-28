@@ -59,7 +59,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             previous_data = file_loader("questions.json")
             previous_data[str(len(previous_data))] = data
             print(data)
-            with open("questions.json", "w") as f:
+            with open("documents.json", "w") as f:
                 json.dump(previous_data, f)
 
             self.send_response(201)
