@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import Document
 from .utils import extract_text_from_docx
+from .vector_store import add_document
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -39,18 +40,36 @@ class DocumentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         uploaded_file = validated_data["file"]
 
+        # Extract text from the uploaded DOCX file.
         validated_data["content"] = extract_text_from_docx(
             uploaded_file
         )
 
-        return super().create(validated_data)
+        # Save the Document in the database.
+        document = super().create(validated_data)
+
+        # Create its embedding and store it in Chroma.
+        add_document(document)
+
+        return document
 
     def update(self, instance, validated_data):
         uploaded_file = validated_data.get("file")
 
+        # If a new DOCX file was uploaded, extract its new content.
         if uploaded_file:
             validated_data["content"] = extract_text_from_docx(
                 uploaded_file
             )
 
-        return super().update(instance, validated_data)
+        # Update the Document in the database.
+        document = super().update(
+            instance,
+            validated_data,
+        )
+
+        # Create/update its embedding in Chroma.
+        add_document(document)
+
+        return document
+
