@@ -168,10 +168,19 @@ mini_document_api/
 
 # تنظیم متغیرهای محیطی
 
-یک فایل `.env` در ریشه پروژه ایجاد کنید.
 
-نمونه:
+فایل نمونه را کپی کنید:
 
+    cp .env.example .env
+
+در ویندوز (PowerShell):
+
+    Copy-Item .env.example .env
+
+سپس یک کلید رایگان از https://openrouter.ai/keys دریافت کرده و مقدار
+`OPENROUTER_API_KEY` را در فایل `.env` قرار دهید.
+
+محتوای `.env.example`:
 ```env
 DJANGO_SECRET_KEY=your-secret-key
 DJANGO_DEBUG=True
@@ -738,18 +747,14 @@ OpenRouter به عنوان درگاه دسترسی به مدل زبانی است
 
 برای سریع‌ترین راه‌اندازی:
 
-```bash
-docker compose build
-docker compose up
-```
+cp .env.example .env
+    # کلید OpenRouter را در .env قرار دهید
 
-در terminal دیگر:
-
-```bash
-docker compose exec web python manage.py migrate
-docker compose exec web python manage.py createsuperuser
-docker compose exec web python manage.py seed_sample_data
-```
+    docker compose build
+    docker compose run --rm web python manage.py migrate
+    docker compose run --rm web python manage.py createsuperuser
+    docker compose run --rm web python manage.py seed_sample_data
+    docker compose up
 
 سپس:
 
