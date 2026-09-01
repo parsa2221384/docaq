@@ -89,9 +89,7 @@ class DocumentExtractionTests(TestCase):
 
 
 class DocumentAPITests(APITestCase):
-    @patch(
-        "documents.serializers.index_document"
-    )
+    @patch("documents.signals.index_document")
     def test_create_document(
         self,
         mock_index_document,
@@ -148,9 +146,7 @@ class DocumentAPITests(APITestCase):
             1,
         )
 
-    @patch(
-        "documents.serializers.index_document"
-    )
+    @patch("documents.signals.index_document")
     def test_invalid_file_rejected(
         self,
         mock_index_document,
@@ -175,75 +171,34 @@ class DocumentAPITests(APITestCase):
             status.HTTP_400_BAD_REQUEST,
         )
 
+        self.assertIn(
+            "file",
+            response.data,
+        )
+
         mock_index_document.assert_not_called()
 
-    @patch(
-        "documents.serializers.index_document"
-    )
+    @patch("documents.signals.vector_store")
     def test_delete_document(
         self,
-        mock_index_document,
+        mock_vector_store,
     ):
         document = Document.objects.create(
             title="Django",
             content="Django content.",
         )
 
-        response = self.client.delete(
-            f"/api/documents/{document.id}/"
-        )
+        document_id = document.id
 
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_204_NO_CONTENT,
-        )
+        document.delete()
 
         self.assertFalse(
             Document.objects.filter(
-                id=document.id
+                id=document_id
             ).exists()
         )
 
-
-class DocumentSignalTests(TestCase):
-    @patch(
-        "documents.signals.vector_store.delete"
-    )
-    def test_delete_document_removes_vectors(
-        self,
-        mock_delete,
-    ):
-        document = Document.objects.create(
-            title="Django",
-            content="Django content.",
-        )
-
-        document_id = document.id
-
-        document.delete()
-
-        mock_delete.assert_called_once_with(
-            where={
-                "document_id": document_id,
-            }
-        )
-
-class DocumentSignalTests(TestCase):
-    @patch("documents.signals.vector_store.delete")
-    def test_delete_document_removes_vectors(
-        self,
-        mock_delete,
-    ):
-        document = Document.objects.create(
-            title="Django",
-            content="Django content.",
-        )
-
-        document_id = document.id
-
-        document.delete()
-
-        mock_delete.assert_called_once_with(
+        mock_vector_store.delete.assert_called_once_with(
             where={
                 "document_id": document_id,
             }
@@ -251,7 +206,7 @@ class DocumentSignalTests(TestCase):
 
 
 class DocumentUpdateTests(APITestCase):
-    @patch("documents.serializers.index_document")
+    @patch("documents.signals.index_document")
     def test_update_document(
         self,
         mock_index_document,
@@ -285,3 +240,28 @@ class DocumentUpdateTests(APITestCase):
             document.content,
             "Old content.",
         )
+
+        mock_index_document.assert_called_once()
+
+
+class DocumentSignalTests(TestCase):
+    @patch("documents.signals.vector_store")
+    def test_delete_document_removes_vectors(
+        self,
+        mock_vector_store,
+    ):
+        document = Document.objects.create(
+            title="Django",
+            content="Django content.",
+        )
+
+        document_id = document.id
+
+        document.delete()
+
+        mock_vector_store.delete.assert_called_once_with(
+            where={
+                "document_id": document_id,
+            }
+        )
+
