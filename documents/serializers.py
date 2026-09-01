@@ -2,9 +2,6 @@ from rest_framework import serializers
 
 from .models import Document
 from .utils import extract_text_from_docx
-#from .vector_store import add_document
-from .rag.vector_store import index_document
-from .rag.vector_store import index_document
 
 
 class DocumentSerializer(serializers.ModelSerializer):
