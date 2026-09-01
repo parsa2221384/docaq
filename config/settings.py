@@ -94,6 +94,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASE_PATH = BASE_DIR / "data" / "db.sqlite3"
 
+# The data/ directory is git-ignored, so a fresh clone does not have it.
+# SQLite will not create a missing parent directory — it fails with
+# "unable to open database file" — so create it here.
+DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 DATABASES = {
     "default": {
@@ -142,7 +146,7 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "data" / "media"
-#Static → files belonging to application
+MEDIA_ROOT.mkdir(parents=True, exist_ok=True)#Static → files belonging to application
 #Media → files uploaded by users
 
 # Email
