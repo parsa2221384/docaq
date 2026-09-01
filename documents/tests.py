@@ -215,7 +215,7 @@ class DocumentUpdateTests(APITestCase):
             title="Old Title",
             content="Old content.",
         )
-
+        mock_index_document.reset_mock()
         response = self.client.patch(
             f"/api/documents/{document.id}/",
             {
