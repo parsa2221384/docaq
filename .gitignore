@@ -26,7 +26,7 @@ env/
 
 *.log
 local_settings.py
-db.sqlite3
+data/db.sqlite3
 
 # =========================
 # Environment / Secrets
@@ -60,4 +60,8 @@ dist/
 .DS_Store
 Thumbs.db
 
-media/
+data/media/
+
+*.pyc
+
+data/vector_db/

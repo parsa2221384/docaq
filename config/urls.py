@@ -18,11 +18,45 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include("documents.urls")),
+    path(
+        "admin/",
+        admin.site.urls,
+    ),
+
+    path(
+        "api/",
+        include("documents.urls"),
+    ),
+
+    path(
+        "api/questions/",
+        include("questions.urls"),
+    ),
+
+    path(
+        "api/schema/",
+        SpectacularAPIView.as_view(),
+        name="schema",
+    ),
+
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(
+            url_name="schema"
+        ),
+        name="swagger-ui",
+    ),
 ]
 
 
@@ -33,3 +67,10 @@ if settings.DEBUG:
     )
 # MEDIA_ROOT می‌گوید فایل کجاست؛ MEDIA_URL می‌گوید کاربر با چه URLای به آن برسد؛ static() این دو را در development به هم وصل می‌کند.
 # یک URL path را به یک directory روی کامپیوتر map می‌کند.
+
+
+
+
+
+
+

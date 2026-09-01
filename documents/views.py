@@ -3,13 +3,13 @@ from rest_framework import viewsets
 from .models import Document
 from .serializers import DocumentSerializer
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
-
+from drf_spectacular.utils import extend_schema_view
 
 class DocumentViewSet(viewsets.ModelViewSet):
     #Create an API controller for Documents. Give it the standard CRUD operations provided by Django REST Framework. When it needs data, work with all Document records in the database. When data needs to move between the API and those records, use DocumentSerializer.
 
     queryset = Document.objects.all().order_by("-created_at")
-    #You're basically configuring the ViewSet: "When you're dealing with documents, use this set of database records."
+    #basically configuring the ViewSet: "When you're dealing with documents, use this set of database records."
     # "The database objects this API is working with are all the Document objects."
     # it's like "SELECT * FROM document;" in SQL
     # note that "objects" is a django interface which has methods like "all", "get", "filter", "create" and deals with application's model items.

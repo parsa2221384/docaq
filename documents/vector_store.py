@@ -1,4 +1,5 @@
 import chromadb
+from langchain_huggingface import HuggingFaceEmbeddings
 from sentence_transformers import SentenceTransformer
 
 
@@ -58,3 +59,9 @@ def search_documents(query, top_k=5):
 #Client
 #    ↓
 #Chroma storage
+
+
+#Database       ≈       Chroma storage
+#Table          ≈       Collection
+#Row            ≈       Vector record
+#Column         ≈       id / embedding / document / metadata

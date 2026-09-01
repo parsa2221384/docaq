@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from .models import Document
 from .utils import extract_text_from_docx
-from .vector_store import add_document
+#from .vector_store import add_document
+from .rag.vector_store import index_document
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -30,7 +31,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         return file
 
     def validate(self, attrs):
-        if not attrs.get("file"):
+        if self.instance is None and not attrs.get("file"):
             raise serializers.ValidationError({
                 "file": "A DOCX file is required."
             })
@@ -49,7 +50,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         document = super().create(validated_data)
 
         # Create its embedding and store it in Chroma.
-        add_document(document)
+        index_document(document)
 
         return document
 
@@ -69,7 +70,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         )
 
         # Create/update its embedding in Chroma.
-        add_document(document)
+        index_document(document)
 
         return document
 
