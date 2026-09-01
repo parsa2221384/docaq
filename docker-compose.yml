@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     environment:
-      VECTOR_DB_PATH:
-        /app/data/vector_db
+      VECTOR_DB_PATH: /app/data/vector_db
+      HF_HOME: /app/data/huggingface
     volumes:
       - ./data:/app/data

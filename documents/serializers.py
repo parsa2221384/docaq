@@ -4,6 +4,7 @@ from .models import Document
 from .utils import extract_text_from_docx
 #from .vector_store import add_document
 from .rag.vector_store import index_document
+from .rag.vector_store import index_document
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -49,8 +50,6 @@ class DocumentSerializer(serializers.ModelSerializer):
         # Save the Document in the database.
         document = super().create(validated_data)
 
-        # Create its embedding and store it in Chroma.
-        index_document(document)
 
         return document
 
@@ -69,8 +68,6 @@ class DocumentSerializer(serializers.ModelSerializer):
             validated_data,
         )
 
-        # Create/update its embedding in Chroma.
-        index_document(document)
 
         return document
 
